@@ -33,8 +33,6 @@ rosnodejs.initNode('/red')
 })
 
 const StringMsg = rosnodejs.require('std_msgs').msg.String;
-const pub = nh.advertise('/chatter', StringMsg)
-
 
 // motor test
 app.get('/motor/:id/:position', async (req, res) => {
@@ -49,8 +47,8 @@ app.get('/motor/:id/:position', async (req, res) => {
     position: position
   }
 
-  const pub = nh.advertise('/motor', 'std_msgs/String');
-  
+  const pub = nh.advertise('/motor', StringMsg);
+
   pub.publish(motor_data);
 
   res.status(200).send(api_response)
