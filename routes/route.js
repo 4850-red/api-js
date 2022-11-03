@@ -5,7 +5,7 @@ const https = require('https')
 var ip = require("ip");
 
 var app = express()
-const port = 80
+const port = 50000
 
 app.listen(
   port, ip.address(),
@@ -33,7 +33,7 @@ rclnodejs.init()
   node = new rclnodejs.Node(nodeName) 
 
   // creates a publisher
-  const msgType = 'std_msgs/msg/String'
+  const msgType = 'uxa_sam_msgs/msg/PositionMove'
   const topic = 'sam_driver_position_move'
   publisher = node.createPublisher(msgType, topic)
   
@@ -56,7 +56,7 @@ app.get('/motor/:id/:position', async (req, res) => {
 
   api_response = `Motor: ${id}, Position: ${position}`
   
-  let msg = `[${id}, ${position}]`
+  let msg = {id: parseInt(id), pos: parseInt(position), torqlevel: 1} // `{id: ${id}, pos14: ${position}}`
 
   console.log(msg)
 
