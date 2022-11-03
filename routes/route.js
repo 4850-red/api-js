@@ -19,15 +19,35 @@ app.use(express.json())
 // ROS INTEGRATION
 const rclnodejs = require('rclnodejs');
 
-const nodeName = 'listener'
+const nodeName = 'api_node'
 
 rclnodejs.init()
 .then(() => {
   console.log('[ROS2] Connection Successful')
-  const node = new rclnodejs.Node(nodeName)
-  const publisher = node.createPublisher('std_msgs/msg/String', 'topic')
-  publisher.publish(`Hello ROS 2 from rclnodejs`)
+
+  // this creates a new node, has the node every second publish to 
+
+  // creates new node
+  const node = new rclnodejs.Node(nodeName) 
+
+  // creates a publisher
+  const msgType = 'std_msgs/msg/String'
+  const topic = '/listener'
+  const publisher = node.createPublisher(msgType, topic)
+  
+  // just loop spamming messages 
+  let counter = 0;
+  setInterval(() => {
+
+    let msg = `From API: Hello ROS2 ${counter++}`
+
+    console.log(`Publishing message: ${msg}`);
+    publisher.publish(msg);
+  }, 1000);
+  
+  // runs the node
   node.spin()
+
 })
 .catch(err => {
   console.log('[ROS2] Connection Failed')
