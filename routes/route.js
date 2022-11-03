@@ -9,7 +9,7 @@ const port = 80
 
 app.listen(
   port, ip.address(),
-  () => console.log(`twichat API started\nListening on http://${ip.address()}:${port}`)
+  () => console.log(`API started\nListening on http://${ip.address()}:${port}`)
 )
 module.exports = router;
 
@@ -17,22 +17,23 @@ app.use(express.json())
 
 
 // ROS INTEGRATION
-const rosnodejs = require('rosnodejs');
+const rclnodejs = require('rclnodejs');
 
-var nh
+const nodeName = 'listener'
 
-// starts node connection to ros
-rosnodejs.initNode('/red')
-// rosnodejs.initNode('/red', { onTheFly: true })
+rclnodejs.init()
 .then(() => {
-  console.log(' >> [ROS] Connection Successful')
-  nh = rosnodejs.nh
+  console.log('[ROS2] Connection Successful')
+  const node = new rclnodejs.Node(nodeName)
+  const publisher = node.createPublisher('std_msgs/msg/String', 'topic')
+  publisher.publish(`Hello ROS 2 from rclnodejs`)
+  node.spin()
 })
-.catch(() => {
-  console.log(' >> [ROS] Connection Failed')
+.catch(err => {
+  console.log('[ROS2] Connection Failed')
+  console.error(err)
 })
 
-const StringMsg = rosnodejs.require('std_msgs').msg.String;
 
 // motor test
 app.get('/motor/:id/:position', async (req, res) => {
@@ -46,10 +47,6 @@ app.get('/motor/:id/:position', async (req, res) => {
     id: id,
     position: position
   }
-
-  const pub = nh.advertise('/motor', StringMsg);
-
-  pub.publish(motor_data);
 
   res.status(200).send(api_response)
 })
