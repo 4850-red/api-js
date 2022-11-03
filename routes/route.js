@@ -20,6 +20,8 @@ app.use(express.json())
 const rclnodejs = require('rclnodejs');
 
 const nodeName = 'api_node'
+var node
+var publisher
 
 rclnodejs.init()
 .then(() => {
@@ -28,25 +30,16 @@ rclnodejs.init()
   // this creates a new node, has the node every second publish to 
 
   // creates new node
-  const node = new rclnodejs.Node(nodeName) 
+  node = new rclnodejs.Node(nodeName) 
 
   // creates a publisher
   const msgType = 'std_msgs/msg/String'
-  const topic = 'chatter'
-  const publisher = node.createPublisher(msgType, topic)
+  const topic = 'sam_driver_position_move'
+  publisher = node.createPublisher(msgType, topic)
   
-  // just loop spamming messages 
-  let counter = 0;
-  setInterval(() => {
-
-    let msg = `From API: Hello ROS2 ${counter++}`
-
-    console.log(`Publishing message: ${msg}`);
-    publisher.publish(msg);
-  }, 1000);
   
   // runs the node
-  node.spin()
+  node.spinOnce()
 
 })
 .catch(err => {
@@ -62,6 +55,14 @@ app.get('/motor/:id/:position', async (req, res) => {
   let position = req.params.position
 
   api_response = `Motor: ${id}, Position: ${position}`
+  
+  let msg = `[${id}, ${position}]`
+
+  console.log(msg)
+
+  publisher.publish(msg);
+
+  node.spinOnce()
 
   motor_data = {
     id: id,
