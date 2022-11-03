@@ -21,7 +21,7 @@ const rclnodejs = require('rclnodejs');
 
 const nodeName = 'api_node'
 var node
-var publisher
+var motor
 
 rclnodejs.init()
 .then(() => {
@@ -35,7 +35,8 @@ rclnodejs.init()
   // creates a publisher
   const msgType = 'uxa_sam_msgs/msg/PositionMove'
   const topic = 'sam_driver_position_move'
-  publisher = node.createPublisher(msgType, topic)
+  motor = node.createPublisher(msgType, topic)
+  motion = node,createPublisher("uxa_sam_mgs/msg/Motion", "uic_driver_motion")
   
   
   // runs the node
@@ -60,7 +61,7 @@ app.get('/motor/:id/:position', async (req, res) => {
 
   console.log(msg)
 
-  publisher.publish(msg);
+  motor.publish(msg);
 
   node.spinOnce()
 
@@ -73,3 +74,24 @@ app.get('/motor/:id/:position', async (req, res) => {
 })
 
 
+app.get('/motion/:name', async (req, res) => {
+
+  let name = req.params.name
+
+  api_response = `Motion ID: ${name}`
+  
+  let msg = { motion_name: name } // `{id: ${id}, pos14: ${position}}`
+
+  console.log(msg)
+
+  publisher.publish(msg);
+
+  node.spinOnce()
+
+  motor_data = {
+    id: id,
+    position: position
+  }
+
+  res.status(200).send(api_response)
+})
