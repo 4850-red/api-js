@@ -32,7 +32,7 @@ rclnodejs.init()
 
   // creates a publisher
   const msgType = 'std_msgs/msg/String'
-  const topic = '/listener'
+  const topic = 'chatter'
   const publisher = node.createPublisher(msgType, topic)
   
   // just loop spamming messages 
